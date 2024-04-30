@@ -51,7 +51,7 @@ exports.createPost = async (req, res) => {
       description: description,
       pictures: picture,
       author: firstName + " " + lastName,
-      userProfilePicture: profilePicture
+      userProfilePicture: profilePicture,
     });
 
     await newPost.save();
@@ -312,8 +312,8 @@ exports.likePost = async (req, res) => {
       newLike: { author, postId, userId },
     });
   } catch (error) {
-    console.error('Error liking post:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error liking post:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -321,11 +321,13 @@ exports.getNotificationsByUserId = async (req, res) => {
   try {
     const userId = req.body.userId;
     const notifications = await Notification.find({ userId: userId });
-    const messageArray = notifications.map(notification => notification.message);
+    const messageArray = notifications.map(
+      (notification) => notification.message
+    );
     res.status(200).json({ messages: messageArray });
   } catch (error) {
-    console.error('Error getting notifications:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error getting notifications:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
