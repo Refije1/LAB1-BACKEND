@@ -1,6 +1,29 @@
 const bcrypt = require("bcrypt");
-const { sql } = require("mssql");
-// const { sql } = require("mssql");
+const sql = require("mssql");
+//const { pool } = require('../server');
+//const config = require('../server').config;
+// Create a pool and connect to SQL Server
+
+const config = {
+  user: "ari_kadriu",
+  password: "123456",
+  server: "127.0.0.1",
+  database: "SocialMedia",
+  options: {
+    trustServerCertificate: true,
+  },
+};
+
+const pool = new sql.ConnectionPool(config);
+
+// Ensure the pool is connected before exporting the functions
+pool.connect(err => {
+  if (err) {
+    console.error("Failed to connect to the database:", err);
+    process.exit(1);
+  }
+});
+
 
 async function register(req, res) {
   try {
@@ -19,6 +42,7 @@ async function register(req, res) {
         .status(400)
         .json({ error: "Password confirmation does not match the password." });
     }
+   
 
     // Check if user with the same email exists
     const existingUser = await pool
@@ -40,11 +64,13 @@ async function register(req, res) {
       .input("lastName", sql.NVarChar, lastName)
       .input("email", sql.NVarChar, email)
       .input("password", sql.NVarChar, passwordHash)
+      .input("confirmPassword", sql.NVarChar, passwordHash)
       .input("gender", sql.NVarChar, gender)
       .input("birthday", sql.Date, birthday)
       .query(
-        "INSERT INTO Users (firstName, lastName, email, password, gender, birthday) VALUES (@firstName, @lastName, @email, @password, @gender, @birthday)"
+        "INSERT INTO Users (firstName, lastName, email, password, confirmPassword, gender, birthday) VALUES (@firstName, @lastName, @email, @password, @confirmPassword, @gender, @birthday)"
       );
+      
 
     // Email verification
     // You'll need to implement this based on your email provider and verification process

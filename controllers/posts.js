@@ -1,17 +1,20 @@
 //const Post = require("../models/Post.js");
 const User = require("../models/User.js");
 const Like = require("../models/Like.js");
-const Comments = require("../models/CommentModel.js");
+const Comments = require("../models/CommentModule.js");
 const SavedPost = require("../models/SavedPost.js");
 const { insertMultipleObjects } = require("../aws/S3Client.js");
-const createLikeNotification = require("../models/notification.js");
-const Notification = require("../models/notificationModel.js");
+// const createLikeNotification = require("../models/notification.js");
+// const Notification = require("../models/notificationModel.js");
 
 const path = require("path");
 const { fileURLToPath } = require("url");
 const { dirname } = require("path");
 
-exports.createPost = async (req, res) => {
+
+
+
+const createPost = async (req, res) => {
   try {
     const { userId, description } = req.body;
     console.log("req.body", req.body);
@@ -64,7 +67,7 @@ exports.createPost = async (req, res) => {
 
 const uploadDirectory = path.join(dirname(__filename), "../uploads");
 
-exports.getPostPictures = async (req, res) => {
+ const getPostPictures = async (req, res) => {
   try {
     const postId = req.params.postId;
 
@@ -82,7 +85,7 @@ exports.getPostPictures = async (req, res) => {
   }
 };
 
-exports.getPosts = async (req, res) => {
+ const getPosts = async (req, res) => {
   try {
     const posts = await Post.find().populate("likes").populate("comments");
     return res.status(200).json(posts);
@@ -91,7 +94,7 @@ exports.getPosts = async (req, res) => {
   }
 };
 
-exports.getFeedPosts = async (req, res) => {
+ const getFeedPosts = async (req, res) => {
   try {
     const { userId } = req.body;
     const user = await User.findById(userId).populate("friends");
@@ -113,7 +116,7 @@ exports.getFeedPosts = async (req, res) => {
   }
 };
 
-exports.getPost = async (req, res) => {
+const getPost = async (req, res) => {
   try {
     const id = req.params.postId;
     const post = await Post.findById(id).populate("likes").populate("comments");
@@ -128,7 +131,7 @@ exports.getPost = async (req, res) => {
   }
 };
 
-exports.getUserPosts = async (req, res) => {
+const getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
     const posts = await Post.find({ userId })
@@ -140,7 +143,7 @@ exports.getUserPosts = async (req, res) => {
   }
 };
 
-exports.updatePost = async (req, res) => {
+const updatePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const description = req.body.description;
@@ -184,7 +187,7 @@ exports.updatePost = async (req, res) => {
   }
 };
 
-exports.deletePost = async (req, res) => {
+const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
 
@@ -204,7 +207,7 @@ exports.deletePost = async (req, res) => {
   }
 };
 
-exports.savePost = async (req, res) => {
+const savePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.body.userId;
@@ -233,7 +236,7 @@ exports.savePost = async (req, res) => {
   }
 };
 
-exports.unsavePost = async (req, res) => {
+const unsavePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.body.userId;
@@ -251,7 +254,7 @@ exports.unsavePost = async (req, res) => {
   }
 };
 
-exports.getUserSavedPosts = async (req, res) => {
+const getUserSavedPosts = async (req, res) => {
   try {
     const { userId } = req.params;
     const userSavedPost = await SavedPost.find({ userId });
@@ -260,8 +263,7 @@ exports.getUserSavedPosts = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
-
-exports.getAllSavedPosts = async (req, res) => {
+const getAllSavedPosts = async (req, res) => {
   try {
     const savedPosts = await SavedPost.find();
     return res.status(200).json(savedPosts);
@@ -270,7 +272,7 @@ exports.getAllSavedPosts = async (req, res) => {
   }
 };
 
-exports.likePost = async (req, res) => {
+const likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.body.userId;
@@ -300,7 +302,7 @@ exports.likePost = async (req, res) => {
     await newLike.save();
 
     const post = await Post.findById(postId);
-    await createLikeNotification(userId, postId, post.userId);
+    // await createLikeNotification(userId, postId, post.userId);
     await Post.findByIdAndUpdate(
       postId,
       { $push: { likes: newLike } },
@@ -317,21 +319,21 @@ exports.likePost = async (req, res) => {
   }
 };
 
-exports.getNotificationsByUserId = async (req, res) => {
-  try {
-    const userId = req.body.userId;
-    const notifications = await Notification.find({ userId: userId });
-    const messageArray = notifications.map(
-      (notification) => notification.message
-    );
-    res.status(200).json({ messages: messageArray });
-  } catch (error) {
-    console.error("Error getting notifications:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+// exports.getNotificationsByUserId = async (req, res) => {
+//   try {
+//     const userId = req.body.userId;
+//     const notifications = await Notification.find({ userId: userId });
+//     const messageArray = notifications.map(
+//       (notification) => notification.message
+//     );
+//     res.status(200).json({ messages: messageArray });
+//   } catch (error) {
+//     console.error("Error getting notifications:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
-exports.unlikePost = async (req, res) => {
+const unlikePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userId = req.body.userId;
@@ -368,7 +370,7 @@ exports.unlikePost = async (req, res) => {
   }
 };
 
-exports.getLikesForPost = async (req, res) => {
+const getLikesForPost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const likes = await Like.find({ postId }).populate({
@@ -388,4 +390,22 @@ exports.getLikesForPost = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+};
+
+module.exports = {
+  createPost,
+  getPostPictures,
+  getPosts,
+  getFeedPosts,
+  getPost,
+  updatePost,
+  deletePost,
+  savePost,
+  unsavePost,
+  getUserSavedPosts,
+  getAllSavedPosts,
+  likePost,
+  unlikePost,
+  getLikesForPost,
+  getUserPosts
 };

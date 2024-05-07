@@ -11,7 +11,6 @@ const {
   getLikesForPost,
   likePost,
   unlikePost,
-  getNotificationsByUserId,
   savePost,
   unsavePost,
   getUserSavedPosts,
@@ -43,6 +42,6 @@ router.get("/savedPosts/:userId", getUserSavedPosts);
 router.get("/savedPosts", getAllSavedPosts);
 
 // Get notifications
-router.post("/posts/notifications", getNotificationsByUserId);
+// router.post("/posts/notifications", getNotificationsByUserId);
 
 module.exports = router;

@@ -1,4 +1,16 @@
-const { sql } = require("mssql");
+const sql = require("mssql");
+
+const config = {
+  user: "ari_kadriu",
+  password: "123456",
+  server: "127.0.0.1",
+  database: "SocialMedia",
+  options: {
+    trustServerCertificate: true,
+  },
+};
+
+const pool = new sql.ConnectionPool(config);
 
 // Define the MSSQL table creation query
 const createTableQuery = `
