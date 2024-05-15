@@ -1,22 +1,23 @@
 const bcrypt = require("bcrypt");
 const sql = require("mssql");
+const jwt = require("jsonwebtoken");
+// const createJWT = require("../utils/helpers")
 //const { pool } = require('../server');
 //const config = require('../server').config;
 // Create a pool and connect to SQL Server
 
 const config = {
-  user: "ari_kadriu",
-  password: "123456",
-  server: "127.0.0.1",
+  user: "new",
+  password: "1234",
+  server: "DESKTOP-4LCJAUE\\SQLEXPRESS01",
   database: "SocialMedia",
   options: {
     trustServerCertificate: true,
   },
 };
-
 const pool = new sql.ConnectionPool(config);
 
-// Ensure the pool is connected before exporting the functions
+// Ensure the pool is connectend before exporting the functions
 pool.connect(err => {
   if (err) {
     console.error("Failed to connect to the database:", err);
@@ -111,7 +112,12 @@ async function login(req, res) {
 
     // Remove password from user data
     delete userData.password;
-
+    
+    const createJWT = (id) => {
+      return jwt.sign({ userId: id }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
+    };
     // Generate JWT token
     const token = createJWT(userData._id);
 
